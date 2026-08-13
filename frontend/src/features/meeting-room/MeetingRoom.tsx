@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { ChatPanel } from "@/features/meeting-room/components/ChatPanel";
@@ -9,6 +9,7 @@ import { MeetingInfoCard } from "@/features/meeting-room/components/MeetingInfoC
 import { MeetingToolbar } from "@/features/meeting-room/components/MeetingToolbar";
 import { ParticipantTile } from "@/features/meeting-room/components/ParticipantTile";
 import { ParticipantsPanel } from "@/features/meeting-room/components/ParticipantsPanel";
+import { useLocalMedia, useToast } from "@/hooks";
 import type { Meeting } from "@/types";
 
 const LOCAL_PARTICIPANT_NAME = "You";
@@ -19,13 +20,30 @@ export interface MeetingRoomProps {
 
 export function MeetingRoom({ meeting }: MeetingRoomProps) {
   const router = useRouter();
+  const toast = useToast();
 
-  const [microphoneEnabled, setMicrophoneEnabled] = useState(true);
-  const [cameraEnabled, setCameraEnabled] = useState(false);
+  const {
+    stream,
+    videoEnabled,
+    audioEnabled,
+    error: mediaError,
+    toggleCamera,
+    toggleMicrophone,
+    stop: stopLocalMedia,
+  } = useLocalMedia();
+
   const [participantsPanelOpen, setParticipantsPanelOpen] = useState(false);
   const [chatPanelOpen, setChatPanelOpen] = useState(false);
 
+  useEffect(() => {
+    if (mediaError) {
+      toast.error("Camera & microphone", mediaError);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mediaError]);
+
   const handleLeave = () => {
+    stopLocalMedia();
     router.push("/");
   };
 
@@ -49,20 +67,21 @@ export function MeetingRoom({ meeting }: MeetingRoomProps) {
         <div className="flex w-full max-w-4xl flex-1 items-center justify-center">
           <ParticipantTile
             displayName={LOCAL_PARTICIPANT_NAME}
-            cameraEnabled={cameraEnabled}
-            microphoneEnabled={microphoneEnabled}
+            cameraEnabled={videoEnabled}
+            microphoneEnabled={audioEnabled}
+            stream={stream}
           />
         </div>
       </main>
 
       <MeetingToolbar
-        microphoneEnabled={microphoneEnabled}
-        cameraEnabled={cameraEnabled}
+        microphoneEnabled={audioEnabled}
+        cameraEnabled={videoEnabled}
         participantsPanelOpen={participantsPanelOpen}
         chatPanelOpen={chatPanelOpen}
         participantCount={meeting.participants.length}
-        onToggleMicrophone={() => setMicrophoneEnabled((enabled) => !enabled)}
-        onToggleCamera={() => setCameraEnabled((enabled) => !enabled)}
+        onToggleMicrophone={toggleMicrophone}
+        onToggleCamera={toggleCamera}
         onToggleParticipants={handleToggleParticipants}
         onToggleChat={handleToggleChat}
         onLeave={handleLeave}

@@ -1,4 +1,7 @@
-import { MicOffIcon, VideoIcon, VideoOffIcon } from "lucide-react";
+"use client";
+
+import { useEffect, useRef } from "react";
+import { MicOffIcon, VideoOffIcon } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/participants";
@@ -8,21 +11,35 @@ export interface ParticipantTileProps {
   displayName: string;
   cameraEnabled: boolean;
   microphoneEnabled: boolean;
+  stream?: MediaStream | null;
   className?: string;
 }
 
 /**
- * The large video tile. There is no real media stream in this commit — a live
- * <video> element bound to a camera MediaStream can be dropped into the branch
- * below in a future commit without touching this tile's size/position, since
- * every state (camera on/off, no stream) already renders inside this same box.
+ * The large video tile. When a local (or, in a future commit, remote) stream
+ * is available and the camera is enabled, a live <video> fills this same box;
+ * otherwise the avatar placeholder below renders instead. The outer box's
+ * size/position never changes between the two, so swapping in a real remote
+ * stream later won't require any layout changes.
  */
 export function ParticipantTile({
   displayName,
   cameraEnabled,
   microphoneEnabled,
+  stream = null,
   className,
 }: ParticipantTileProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const showVideo = Boolean(stream) && cameraEnabled;
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) {
+      return;
+    }
+    video.srcObject = showVideo ? stream : null;
+  }, [stream, showVideo]);
+
   return (
     <div
       className={cn(
@@ -30,11 +47,14 @@ export function ParticipantTile({
         className
       )}
     >
-      {cameraEnabled ? (
-        <div className="flex flex-col items-center gap-3 text-center text-muted-foreground">
-          <VideoIcon className="size-10" />
-          <p className="text-sm">Camera preview isn&apos;t available yet</p>
-        </div>
+      {showVideo ? (
+        <video
+          ref={videoRef}
+          autoPlay
+          muted
+          playsInline
+          className="h-full w-full scale-x-[-1] object-cover"
+        />
       ) : (
         <div className="flex flex-col items-center gap-3 text-center">
           <Avatar className="size-28 ring-4 ring-white/5 sm:size-32">
