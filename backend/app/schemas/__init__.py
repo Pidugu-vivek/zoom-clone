@@ -1,4 +1,13 @@
-from app.schemas.meeting import MeetingBase, MeetingCreate, MeetingRead, MeetingUpdate  # noqa: F401
+from app.schemas.meeting import (  # noqa: F401
+    JoinMeetingRequest,
+    JoinMeetingResponse,
+    MeetingBase,
+    MeetingCreate,
+    MeetingInstantCreateRequest,
+    MeetingRead,
+    MeetingScheduleCreateRequest,
+    MeetingUpdate,
+)
 from app.schemas.participant import (  # noqa: F401
     ParticipantBase,
     ParticipantCreate,

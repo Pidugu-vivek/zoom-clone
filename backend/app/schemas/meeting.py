@@ -34,3 +34,34 @@ class MeetingRead(MeetingBase):
     invite_link: str
     created_at: datetime
     participants: list[ParticipantRead] = Field(default_factory=list)
+
+
+class MeetingInstantCreateRequest(BaseModel):
+    """Request body for POST /meetings/instant. meeting_id and invite_link are server-generated."""
+
+    title: str = "Instant Meeting"
+    description: str | None = None
+    duration: int = Field(default=60, gt=0, le=1440)
+
+
+class MeetingScheduleCreateRequest(BaseModel):
+    """Request body for POST /meetings/schedule. meeting_id and invite_link are server-generated."""
+
+    title: str
+    description: str | None = None
+    start_time: datetime
+    duration: int = Field(gt=0, le=1440)
+
+
+class JoinMeetingRequest(BaseModel):
+    """Request body for POST /meetings/join."""
+
+    meeting_id: str
+    display_name: str = Field(min_length=1, max_length=255)
+
+
+class JoinMeetingResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    meeting: MeetingRead
+    participant: ParticipantRead
