@@ -14,3 +14,9 @@ from app.schemas.participant import (  # noqa: F401
     ParticipantRead,
     ParticipantUpdate,
 )
+from app.schemas.user import (  # noqa: F401
+    AuthResponse,
+    UserLoginRequest,
+    UserRead,
+    UserSignupRequest,
+)

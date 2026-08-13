@@ -1,1 +1,1 @@
-from app.services import meeting_service  # noqa: F401
+from app.services import auth_service, meeting_service  # noqa: F401

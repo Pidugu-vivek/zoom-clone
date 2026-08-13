@@ -8,4 +8,9 @@ export const API_ROUTES = {
     schedule: `${API_V1_PREFIX}/meetings/schedule`,
     join: `${API_V1_PREFIX}/meetings/join`,
   },
+  auth: {
+    signup: `${API_V1_PREFIX}/auth/signup`,
+    login: `${API_V1_PREFIX}/auth/login`,
+    me: `${API_V1_PREFIX}/auth/me`,
+  },
 } as const;
