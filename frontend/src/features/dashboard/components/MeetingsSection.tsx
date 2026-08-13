@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { CalendarXIcon } from "lucide-react";
 
 import { EmptyState, MeetingCard, MeetingCardSkeleton, SectionHeader } from "@/components/shared";
 import { useApi, useToast } from "@/hooks";
+import { useMeetingStore } from "@/store";
 import type { Meeting } from "@/types";
 
 export interface MeetingsSectionProps {
@@ -26,12 +27,26 @@ export function MeetingsSection({
 }: MeetingsSectionProps) {
   const { data: meetings, isLoading, error, execute } = useApi(fetchMeetings);
   const toast = useToast();
+  const storeMeetings = useMeetingStore((state) => state.meetings);
+  const hasMountedRef = useRef(false);
 
   useEffect(() => {
     execute().catch(() => {
       // error is surfaced via the `error` state + toast effect below
     });
   }, [execute]);
+
+  // Re-fetch whenever a meeting is created/joined elsewhere in the app (e.g. Schedule
+  // Meeting), so this section reflects the latest backend state without a page reload.
+  useEffect(() => {
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true;
+      return;
+    }
+    execute().catch(() => {
+      // error is surfaced via the `error` state + toast effect below
+    });
+  }, [storeMeetings, execute]);
 
   useEffect(() => {
     if (error) {

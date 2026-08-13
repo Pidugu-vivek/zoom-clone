@@ -1,3 +1,4 @@
+import { parseUtcTimestamp } from "@/lib/datetime";
 import type { Meeting } from "@/types";
 
 export interface SplitMeetings {
@@ -13,15 +14,19 @@ export function splitMeetingsByStartTime(
   const recent: Meeting[] = [];
 
   for (const meeting of meetings) {
-    if (new Date(meeting.start_time) >= referenceDate) {
+    if (parseUtcTimestamp(meeting.start_time) >= referenceDate) {
       upcoming.push(meeting);
     } else {
       recent.push(meeting);
     }
   }
 
-  upcoming.sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime());
-  recent.sort((a, b) => new Date(b.start_time).getTime() - new Date(a.start_time).getTime());
+  upcoming.sort(
+    (a, b) => parseUtcTimestamp(a.start_time).getTime() - parseUtcTimestamp(b.start_time).getTime()
+  );
+  recent.sort(
+    (a, b) => parseUtcTimestamp(b.start_time).getTime() - parseUtcTimestamp(a.start_time).getTime()
+  );
 
   return { upcoming, recent };
 }
@@ -51,4 +56,13 @@ export function extractMeetingId(input: string): string {
     const joinMatch = trimmed.match(/\/join\/([^/?#]+)/);
     return joinMatch ? joinMatch[1] : trimmed;
   }
+}
+
+/**
+ * Combines a date input value ("YYYY-MM-DD") and a time input value ("HH:MM"),
+ * both interpreted in the user's local timezone, into a UTC ISO 8601 string
+ * suitable for the backend's `start_time` field.
+ */
+export function combineDateAndTimeToISOString(date: string, time: string): string {
+  return new Date(`${date}T${time}`).toISOString();
 }

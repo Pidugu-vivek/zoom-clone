@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { JoinMeetingModal } from "@/features/dashboard/components/JoinMeetingModal";
+import { ScheduleMeetingModal } from "@/features/dashboard/components/ScheduleMeetingModal";
 import { useApi, useToast } from "@/hooks";
 import { isApiError, meetingService } from "@/lib/api";
 import { useMeetingStore } from "@/store";
@@ -19,6 +20,7 @@ export function HeroSection() {
   const setActiveMeeting = useMeetingStore((state) => state.setActiveMeeting);
 
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
 
   const { execute: createInstantMeeting, isLoading: isCreatingMeeting } = useApi(
     meetingService.createInstantMeeting
@@ -35,10 +37,6 @@ export function HeroSection() {
       const message = isApiError(err) ? err.message : "Failed to create meeting. Please try again.";
       toast.error("Couldn't start meeting", message);
     }
-  };
-
-  const handlePlaceholderAction = (action: string) => {
-    toast.info(`${action} is coming soon`);
   };
 
   return (
@@ -77,7 +75,7 @@ export function HeroSection() {
               variant="outline"
               size="lg"
               className="h-11 gap-2 px-6 text-base"
-              onClick={() => handlePlaceholderAction("Schedule Meeting")}
+              onClick={() => setIsScheduleModalOpen(true)}
             >
               <CalendarIcon className="size-5" />
               Schedule Meeting
@@ -87,6 +85,7 @@ export function HeroSection() {
       </Card>
 
       <JoinMeetingModal open={isJoinModalOpen} onOpenChange={setIsJoinModalOpen} />
+      <ScheduleMeetingModal open={isScheduleModalOpen} onOpenChange={setIsScheduleModalOpen} />
     </>
   );
 }
