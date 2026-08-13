@@ -9,7 +9,7 @@ import { MeetingInfoCard } from "@/features/meeting-room/components/MeetingInfoC
 import { MeetingToolbar } from "@/features/meeting-room/components/MeetingToolbar";
 import { ParticipantTile } from "@/features/meeting-room/components/ParticipantTile";
 import { ParticipantsPanel } from "@/features/meeting-room/components/ParticipantsPanel";
-import { useLocalMedia, useToast } from "@/hooks";
+import { useAudioLevel, useLocalMedia, useToast } from "@/hooks";
 import type { Meeting } from "@/types";
 
 const LOCAL_PARTICIPANT_NAME = "You";
@@ -31,6 +31,8 @@ export function MeetingRoom({ meeting }: MeetingRoomProps) {
     toggleMicrophone,
     stop: stopLocalMedia,
   } = useLocalMedia();
+
+  const audioLevel = useAudioLevel({ stream, enabled: audioEnabled });
 
   const [participantsPanelOpen, setParticipantsPanelOpen] = useState(false);
   const [chatPanelOpen, setChatPanelOpen] = useState(false);
@@ -80,6 +82,7 @@ export function MeetingRoom({ meeting }: MeetingRoomProps) {
         participantsPanelOpen={participantsPanelOpen}
         chatPanelOpen={chatPanelOpen}
         participantCount={meeting.participants.length}
+        audioLevel={audioLevel}
         onToggleMicrophone={toggleMicrophone}
         onToggleCamera={toggleCamera}
         onToggleParticipants={handleToggleParticipants}

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AudioLevelIndicator } from "@/features/meeting-room/components/AudioLevelIndicator";
 import { MeetingControlButton } from "@/features/meeting-room/components/MeetingControlButton";
 import { useToast } from "@/hooks";
 
@@ -22,6 +23,7 @@ export interface MeetingToolbarProps {
   participantsPanelOpen: boolean;
   chatPanelOpen: boolean;
   participantCount: number;
+  audioLevel: number;
   onToggleMicrophone: () => void;
   onToggleCamera: () => void;
   onToggleParticipants: () => void;
@@ -35,6 +37,7 @@ export function MeetingToolbar({
   participantsPanelOpen,
   chatPanelOpen,
   participantCount,
+  audioLevel,
   onToggleMicrophone,
   onToggleCamera,
   onToggleParticipants,
@@ -46,12 +49,20 @@ export function MeetingToolbar({
   return (
     <footer className="relative z-[60] flex shrink-0 flex-wrap items-center justify-center gap-2 border-t border-border bg-background px-3 py-3 sm:gap-3">
       <TooltipProvider delay={300}>
-        <MeetingControlButton
-          icon={microphoneEnabled ? MicIcon : MicOffIcon}
-          label={microphoneEnabled ? "Mute" : "Unmute"}
-          active={microphoneEnabled}
-          onClick={onToggleMicrophone}
-        />
+        <div className="relative">
+          <MeetingControlButton
+            icon={microphoneEnabled ? MicIcon : MicOffIcon}
+            label={microphoneEnabled ? "Mute" : "Unmute"}
+            active={microphoneEnabled}
+            onClick={onToggleMicrophone}
+          />
+          {microphoneEnabled && (
+            <AudioLevelIndicator
+              level={audioLevel}
+              className="absolute -bottom-0.5 left-1/2 -translate-x-1/2"
+            />
+          )}
+        </div>
         <MeetingControlButton
           icon={cameraEnabled ? VideoIcon : VideoOffIcon}
           label={cameraEnabled ? "Stop Video" : "Start Video"}

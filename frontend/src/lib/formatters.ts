@@ -15,6 +15,20 @@ export function formatMeetingTime(iso: string): string {
   }).format(parseUtcTimestamp(iso));
 }
 
+/** Formats a whole-second count as an elapsed-time clock: "00:00", "01:25", or "01:02:30". */
+export function formatElapsedTime(totalSeconds: number): string {
+  const pad = (value: number) => String(value).padStart(2, "0");
+
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  if (hours > 0) {
+    return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+  }
+  return `${pad(minutes)}:${pad(seconds)}`;
+}
+
 export function formatDuration(minutes: number): string {
   if (minutes < 60) {
     return `${minutes} min`;

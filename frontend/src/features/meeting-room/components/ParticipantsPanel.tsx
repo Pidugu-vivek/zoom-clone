@@ -48,7 +48,7 @@ export function ParticipantsPanel({ open, onOpenChange, participants }: Particip
                   key={participant.id}
                   className="flex items-center gap-3 rounded-lg px-2.5 py-2.5 transition-colors hover:bg-muted"
                 >
-                  <Avatar className="size-9 shrink-0">
+                  <Avatar className="size-9 shrink-0 ring-1 ring-border">
                     <AvatarFallback className="text-sm">
                       {getInitials(participant.display_name)}
                     </AvatarFallback>
