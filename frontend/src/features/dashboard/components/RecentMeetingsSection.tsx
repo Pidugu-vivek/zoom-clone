@@ -1,7 +1,7 @@
 "use client";
 
 import { MeetingsSection } from "@/features/dashboard/components/MeetingsSection";
-import { fetchMockRecentMeetings } from "@/features/dashboard/data/mockMeetings";
+import { fetchRecentMeetings } from "@/features/dashboard/data/meetings";
 
 export function RecentMeetingsSection() {
   return (
@@ -9,7 +9,7 @@ export function RecentMeetingsSection() {
       title="Recent Meetings"
       description="Meetings you've recently hosted or joined"
       variant="recent"
-      fetchMeetings={fetchMockRecentMeetings}
+      fetchMeetings={fetchRecentMeetings}
       emptyMessage="You don't have any recent meetings yet."
     />
   );

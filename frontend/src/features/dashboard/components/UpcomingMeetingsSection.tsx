@@ -1,7 +1,7 @@
 "use client";
 
 import { MeetingsSection } from "@/features/dashboard/components/MeetingsSection";
-import { fetchMockUpcomingMeetings } from "@/features/dashboard/data/mockMeetings";
+import { fetchUpcomingMeetings } from "@/features/dashboard/data/meetings";
 
 export function UpcomingMeetingsSection() {
   return (
@@ -9,7 +9,7 @@ export function UpcomingMeetingsSection() {
       title="Upcoming Meetings"
       description="Meetings scheduled for the days ahead"
       variant="upcoming"
-      fetchMeetings={fetchMockUpcomingMeetings}
+      fetchMeetings={fetchUpcomingMeetings}
       emptyMessage="You have no upcoming meetings scheduled."
     />
   );

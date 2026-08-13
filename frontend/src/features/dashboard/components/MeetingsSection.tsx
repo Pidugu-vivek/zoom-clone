@@ -24,12 +24,21 @@ export function MeetingsSection({
   emptyMessage,
   skeletonCount = 4,
 }: MeetingsSectionProps) {
-  const { data: meetings, isLoading, execute } = useApi(fetchMeetings);
+  const { data: meetings, isLoading, error, execute } = useApi(fetchMeetings);
   const toast = useToast();
 
   useEffect(() => {
-    execute();
+    execute().catch(() => {
+      // error is surfaced via the `error` state + toast effect below
+    });
   }, [execute]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(`Failed to load ${title.toLowerCase()}`, error);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [error]);
 
   return (
     <section className="flex flex-col gap-4">

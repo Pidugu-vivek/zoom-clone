@@ -1,13 +1,37 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { CalendarIcon, UsersIcon, VideoIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useToast } from "@/hooks";
+import { Spinner } from "@/components/ui/spinner";
+import { useApi, useToast } from "@/hooks";
+import { isApiError, meetingService } from "@/lib/api";
+import { useMeetingStore } from "@/store";
 
 export function HeroSection() {
+  const router = useRouter();
   const toast = useToast();
+  const addMeeting = useMeetingStore((state) => state.addMeeting);
+  const setActiveMeeting = useMeetingStore((state) => state.setActiveMeeting);
+
+  const { execute: createInstantMeeting, isLoading: isCreatingMeeting } = useApi(
+    meetingService.createInstantMeeting
+  );
+
+  const handleNewMeeting = async () => {
+    try {
+      const meeting = await createInstantMeeting();
+      addMeeting(meeting);
+      setActiveMeeting(meeting);
+      toast.success("Meeting created", `Meeting ID: ${meeting.meeting_id}`);
+      router.push(`/join/${meeting.meeting_id}`);
+    } catch (err) {
+      const message = isApiError(err) ? err.message : "Failed to create meeting. Please try again.";
+      toast.error("Couldn't start meeting", message);
+    }
+  };
 
   const handlePlaceholderAction = (action: string) => {
     toast.info(`${action} is coming soon`);
@@ -29,9 +53,10 @@ export function HeroSection() {
           <Button
             size="lg"
             className="h-11 gap-2 bg-[#0b5cff] px-6 text-base text-white hover:bg-[#0a52e6]"
-            onClick={() => handlePlaceholderAction("New Meeting")}
+            onClick={handleNewMeeting}
+            disabled={isCreatingMeeting}
           >
-            <VideoIcon className="size-5" />
+            {isCreatingMeeting ? <Spinner className="size-5" /> : <VideoIcon className="size-5" />}
             New Meeting
           </Button>
           <Button
