@@ -1,8 +1,10 @@
-import { SearchIcon, SettingsIcon, VideoIcon } from "lucide-react";
+import Link from "next/link";
+import { LogInIcon, SearchIcon, SettingsIcon, VideoIcon } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 export function DashboardNavbar() {
   return (
@@ -29,6 +31,13 @@ export function DashboardNavbar() {
         </div>
 
         <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:ml-0">
+          <Link
+            href="/signin"
+            className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-1.5")}
+          >
+            <LogInIcon className="size-4" />
+            <span className="hidden sm:inline">Sign In</span>
+          </Link>
           <Button variant="ghost" size="icon" aria-label="Settings">
             <SettingsIcon className="size-4.5" />
           </Button>
