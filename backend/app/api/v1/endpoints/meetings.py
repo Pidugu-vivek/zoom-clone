@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
 
+from app.api.deps import get_current_user
 from app.db.session import get_db
+from app.models.user import User
 from app.schemas.meeting import (
     JoinMeetingRequest,
     JoinMeetingResponse,
@@ -30,16 +32,20 @@ def get_meeting(meeting_id: str, db: Session = Depends(get_db)) -> MeetingRead:
 
 @router.post("/instant", response_model=MeetingRead, status_code=status.HTTP_201_CREATED)
 def create_instant_meeting(
-    payload: MeetingInstantCreateRequest, db: Session = Depends(get_db)
+    payload: MeetingInstantCreateRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ) -> MeetingRead:
-    return meeting_service.create_instant_meeting(db, payload)
+    return meeting_service.create_instant_meeting(db, payload, created_by_id=current_user.id)
 
 
 @router.post("/schedule", response_model=MeetingRead, status_code=status.HTTP_201_CREATED)
 def create_scheduled_meeting(
-    payload: MeetingScheduleCreateRequest, db: Session = Depends(get_db)
+    payload: MeetingScheduleCreateRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ) -> MeetingRead:
-    return meeting_service.create_scheduled_meeting(db, payload)
+    return meeting_service.create_scheduled_meeting(db, payload, created_by_id=current_user.id)
 
 
 @router.post("/join", response_model=JoinMeetingResponse, status_code=status.HTTP_200_OK)

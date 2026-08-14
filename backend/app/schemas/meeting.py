@@ -16,6 +16,7 @@ class MeetingBase(BaseModel):
 class MeetingCreate(MeetingBase):
     meeting_id: str
     invite_link: str
+    created_by_id: int | None = None
 
 
 class MeetingUpdate(BaseModel):
@@ -33,6 +34,7 @@ class MeetingRead(MeetingBase):
     meeting_id: str
     invite_link: str
     created_at: datetime
+    created_by_id: int | None = None
     participants: list[ParticipantRead] = Field(default_factory=list)
 
 

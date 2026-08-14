@@ -73,7 +73,9 @@ def get_meeting_by_public_id(db: Session, meeting_id: str) -> Meeting:
     return meeting
 
 
-def create_instant_meeting(db: Session, payload: MeetingInstantCreateRequest) -> Meeting:
+def create_instant_meeting(
+    db: Session, payload: MeetingInstantCreateRequest, created_by_id: int
+) -> Meeting:
     meeting_id = _generate_unique_meeting_id(db)
     meeting_in = MeetingCreate(
         meeting_id=meeting_id,
@@ -83,11 +85,14 @@ def create_instant_meeting(db: Session, payload: MeetingInstantCreateRequest) ->
         duration=payload.duration,
         invite_link=_build_invite_link(meeting_id),
         is_instant=True,
+        created_by_id=created_by_id,
     )
     return _create_meeting_or_conflict(db, meeting_in)
 
 
-def create_scheduled_meeting(db: Session, payload: MeetingScheduleCreateRequest) -> Meeting:
+def create_scheduled_meeting(
+    db: Session, payload: MeetingScheduleCreateRequest, created_by_id: int
+) -> Meeting:
     start_time = payload.start_time
     if start_time.tzinfo is None:
         start_time = start_time.replace(tzinfo=timezone.utc)
@@ -107,6 +112,7 @@ def create_scheduled_meeting(db: Session, payload: MeetingScheduleCreateRequest)
         duration=payload.duration,
         invite_link=_build_invite_link(meeting_id),
         is_instant=False,
+        created_by_id=created_by_id,
     )
     return _create_meeting_or_conflict(db, meeting_in)
 
